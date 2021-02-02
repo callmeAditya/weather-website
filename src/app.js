@@ -3,9 +3,15 @@ const express = require('express')
 const hbs = require('hbs')
 const geocode = require('./utils/geocode')
 const forecast = require('./utils/forecast')
+const socketio=require('socket.io')
+const http=require('http')
 
 const app = express()
 const port= process.env.PORT || 3100
+const server=http.createServer(app)
+const io=socketio(server)
+
+
 // Define paths for Express config
 const publicDirectoryPath = path.join(__dirname, '../public')
 const viewsPath = path.join(__dirname, '../templates/views')
@@ -18,6 +24,28 @@ hbs.registerPartials(partialsPath)
 
 // Setup static directory to serve
 app.use(express.static(publicDirectoryPath))
+
+
+
+io.on('connection', (socket)=>{
+    console.log('New socket connection')
+
+    socket.on('sendLocation',(coords,callback)=>{
+        // socket.emit('sendMessage',`https://google.com/maps?q=${coords.latitude},${coords.longitude}`)
+        forecast(coords.latitude,coords.longitude,(error,forecastData)=>{
+            console.log(coords.latitude)
+            if(error){
+                return res.send({error})
+            }
+           socket.emit('sendMessage',{
+               
+            forecast: forecastData,
+                
+            })
+        })
+        callback()
+    })
+})
 
 app.get('', (req, res) => {
     res.render('index', {
@@ -67,6 +95,8 @@ app.get('/weather', (req, res) => {
     })
 })
 
+
+
 app.get('/products', (req, res) => {
     if (!req.query.search) {
         return res.send({
@@ -96,6 +126,10 @@ app.get('*', (req, res) => {
     })
 })
 
-app.listen(port, () => {
-    console.log('Server is up on port 3100.')
+// app.listen(port, () => {
+//     console.log('Server is up on port 3100.')
+// })
+
+server.listen(port, () => {
+    console.log(`Server is up on port ${port}!`)
 })
