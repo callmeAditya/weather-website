@@ -1,3 +1,36 @@
+$( ".inner-switch" ).on("click", function() {
+    const currentTheme = localStorage.getItem("theme");
+    if( $( "body" ).hasClass( "dark" )) {
+      $( "body" ).removeClass( "dark" );
+      $( ".inner-switch" ).text( "OFF" );
+        localStorage.setItem("theme", "light");
+    } else {
+      $( "body" ).addClass( "dark" );
+      $( ".inner-switch" ).text( "ON" );
+    }
+});
+
+// const btn = document.querySelector(".switch");
+
+// const currentTheme = localStorage.getItem("theme");
+// if (currentTheme == "dark") {
+//   document.body.classList.add(".dark");
+// }
+
+// btn.addEventListener("click", function () {
+//   document.body.classList.toggle(".dark");
+
+//   let theme = "light";
+//   if (document.body.classList.contains(".dark")) {
+//     theme = "dark";
+//   }
+//   localStorage.setItem("theme", theme);
+// });
+
+
+
+
+
 const socket=io()
 
 const weatherForm = document.querySelector('form')
